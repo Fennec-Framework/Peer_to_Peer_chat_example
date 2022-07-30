@@ -1,0 +1,23 @@
+name: backend
+description: A sample command-line application.
+version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: ">=2.17.6 <3.0.0"
+
+# dependencies:
+#   path: ^1.8.0
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.16.0
+dependencies:
+  {
+    encrypt: ^5.0.1,
+    fennec: ^1.0.4,
+    fennec_jwt: ^0.0.2,
+    fennec_pg: ^0.0.4,
+    fennec_socket_io_server: ^0.0.3,
+    socket_io_client: ^1.0.2,
+  }

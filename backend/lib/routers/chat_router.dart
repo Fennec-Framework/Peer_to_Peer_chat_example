@@ -1,0 +1,44 @@
+import 'package:backend/models/chat.dart';
+import 'package:backend/repositories/user_repository.dart';
+import 'package:fennec/fennec.dart';
+
+import '../socket_io_singelton.dart';
+
+Router chatRouter() {
+  Router router = Router(routerPath: '/api/v1/chat');
+  final ChatRepository chatRepository = ChatRepository();
+  router.useMiddleware((req, res) {
+    if (1 == 1) {
+      return MiddleWareResponse(MiddleWareResponseEnum.next);
+    }
+    res.forbidden().send('not allowed');
+    return MiddleWareResponse(MiddleWareResponseEnum.stop);
+  });
+  router.post(
+      path: '/createchat',
+      requestHandler: (req, res) async {
+        String chatId = req.body['chatId'];
+        Map<String, dynamic> lastMessage = req.body['lastMessage'];
+        Chat chat = Chat(chatId);
+
+        //chat.lastMessage = lastMessage;
+        final result = await chatRepository.findOneById(chatId);
+
+        if (result != null) {
+          SocketIOSingelton.instance.serverIO.emit(
+              'realtime/chats', {'event': 'create', 'data': result.toJson()});
+
+          res.ok().send('chat already exist');
+        } else {
+          final result = null;
+          if (result != null) {
+            SocketIOSingelton.instance.serverIO.emit(
+                'realtime/chats', {'event': 'create', 'data': result.toJson()});
+            res.ok().send('chat successful created');
+          } else {
+            res.badRequest().send('chat coudnt be created');
+          }
+        }
+      });
+  return router;
+}
