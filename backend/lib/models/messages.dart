@@ -2,7 +2,7 @@ import 'package:backend/models/chat.dart';
 import 'package:fennec_pg/fennec_pg.dart';
 
 @Table('messages')
-class Messages {
+class Messages extends Serializable {
   @PrimaryKey(autoIncrement: true)
   int? id;
   @Column()
@@ -11,7 +11,7 @@ class Messages {
   late int to;
   @Column(isNullable: false)
   late String content;
-  @Column(isNullable: false)
+  @Column(isNullable: false, type: ColumnType.bigInt)
   late int timestamp;
   @Column(isNullable: false, alias: 'chat_id')
   late String chatId;

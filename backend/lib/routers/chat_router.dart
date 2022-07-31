@@ -15,22 +15,33 @@ Router chatRouter() {
     return MiddleWareResponse(MiddleWareResponseEnum.stop);
   });
   router.post(
+      path: '/getChat',
+      requestHandler: (req, res) async {
+        String chatId = req.body['chatId'];
+
+        final result = await chatRepository.findOneById(chatId);
+        if (result == null) {
+          res.badRequest().json({'message': 'Chat with $chatId not found'});
+        } else {
+          res.json({'result': result});
+        }
+      });
+
+  router.post(
       path: '/createchat',
       requestHandler: (req, res) async {
         String chatId = req.body['chatId'];
-        Map<String, dynamic> lastMessage = req.body['lastMessage'];
+        Map<String, dynamic> lastMessage = req.body['lastMessage'] ?? {};
         Chat chat = Chat(chatId);
-
-        //chat.lastMessage = lastMessage;
+        chat.lastMessage = lastMessage;
         final result = await chatRepository.findOneById(chatId);
-
         if (result != null) {
           SocketIOSingelton.instance.serverIO.emit(
               'realtime/chats', {'event': 'create', 'data': result.toJson()});
 
           res.ok().send('chat already exist');
         } else {
-          final result = null;
+          final result = await chatRepository.insert(chat);
           if (result != null) {
             SocketIOSingelton.instance.serverIO.emit(
                 'realtime/chats', {'event': 'create', 'data': result.toJson()});
