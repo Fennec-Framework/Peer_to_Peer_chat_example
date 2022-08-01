@@ -1,19 +1,16 @@
+import 'package:backend/middlewares/auth_middlware.dart';
 import 'package:backend/models/chat.dart';
 import 'package:backend/repositories/user_repository.dart';
 import 'package:fennec/fennec.dart';
+import 'package:fennec_jwt/fennec_jwt.dart';
 
 import '../socket_io_singelton.dart';
+import 'auth_router.dart';
 
 Router chatRouter() {
   Router router = Router(routerPath: '/api/v1/chat');
   final ChatRepository chatRepository = ChatRepository();
-  router.useMiddleware((req, res) {
-    if (1 == 1) {
-      return MiddleWareResponse(MiddleWareResponseEnum.next);
-    }
-    res.forbidden().send('not allowed');
-    return MiddleWareResponse(MiddleWareResponseEnum.stop);
-  });
+  router.useMiddleware(verfiyToken);
   router.post(
       path: '/getChat',
       requestHandler: (req, res) async {

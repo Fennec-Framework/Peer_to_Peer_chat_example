@@ -16,6 +16,7 @@ class Messages extends Serializable {
   @Column(isNullable: false, alias: 'chat_id')
   late String chatId;
   Messages(this.from, this.to, this.content, this.timestamp, this.chatId);
+  Messages.empty();
   Messages.fromJson(Map<String, dynamic> map) {
     id = map['id'];
     from = map['from'];

@@ -52,7 +52,7 @@ Router authRouter() {
                 'userId': result.first.id,
                 'username': result.first.username
               },
-              maxAge: const Duration(minutes: 5),
+              maxAge: const Duration(days: 1),
             );
             final token = generateJwtHS256(claimSet, sharedSecret);
             res.ok().json({'user': result.first.toJson(), 'token': token});

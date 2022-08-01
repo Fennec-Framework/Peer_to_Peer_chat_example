@@ -10,7 +10,7 @@ import 'package:fennec_socket_io_server/server_io.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 void main(List<String> arguments) async {
-  var uri = 'postgres://postgres:StartAppPassword@localhost:5432/topicsapp_db';
+  var uri = 'postgres://postgres:StartAppPassword@localhost:5432/test_flutter';
   await PGConnectionAdapter.init(uri);
   Application application = Application();
   application.useSocketIOServer(true);
