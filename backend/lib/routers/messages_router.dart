@@ -2,11 +2,10 @@ import 'package:backend/models/messages.dart';
 import 'package:backend/repositories/user_repository.dart';
 import 'package:backend/socket_io_singelton.dart';
 import 'package:fennec/fennec.dart';
-import 'package:fennec_jwt/fennec_jwt.dart';
+
 import 'package:fennec_pg/fennec_pg.dart';
 
 import '../middlewares/auth_middlware.dart';
-import 'auth_router.dart';
 
 Router messagesRouter() {
   Router router = Router(routerPath: '/api/v1/messages');

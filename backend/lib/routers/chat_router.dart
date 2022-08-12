@@ -2,10 +2,8 @@ import 'package:backend/middlewares/auth_middlware.dart';
 import 'package:backend/models/chat.dart';
 import 'package:backend/repositories/user_repository.dart';
 import 'package:fennec/fennec.dart';
-import 'package:fennec_jwt/fennec_jwt.dart';
 
 import '../socket_io_singelton.dart';
-import 'auth_router.dart';
 
 Router chatRouter() {
   Router router = Router(routerPath: '/api/v1/chat');

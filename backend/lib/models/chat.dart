@@ -10,7 +10,7 @@ class Chat extends Serializable {
   Map<String, dynamic> lastMessage = {};
   @HasMany(
       cascadeOnDelete: CascadeType.delete,
-      fetchType: FetchType.include,
+      fetchType: FetchType.exclude,
       localKey: 'chat_id',
       foreignKey: 'chatId')
   List<Messages> messages = [];

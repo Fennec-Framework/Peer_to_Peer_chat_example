@@ -1,4 +1,3 @@
-import 'package:backend/models/chat.dart';
 import 'package:fennec_pg/fennec_pg.dart';
 
 @Table('messages')

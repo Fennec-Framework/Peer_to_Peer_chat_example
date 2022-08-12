@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:math';
 
-import 'package:backend/socket_io_singelton.dart';
 import 'package:fennec/fennec.dart' hide UserRepository;
 import 'package:fennec_jwt/fennec_jwt.dart';
 import 'package:fennec_pg/fennec_pg.dart';
@@ -10,8 +8,6 @@ import 'package:encrypt/encrypt.dart';
 import '../models/user.dart';
 import '../repositories/user_repository.dart';
 import '../utils/utils.dart';
-
-import 'package:fennec_pg/src/orm/filter/field.dart';
 
 final key = 'hash password111';
 final String sharedSecret = 'jwt_secret';
