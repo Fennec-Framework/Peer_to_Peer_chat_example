@@ -12,10 +12,12 @@ class Messages extends Serializable {
   late String content;
   @Column(isNullable: false, type: ColumnType.bigInt)
   late int timestamp;
-  @Column(isNullable: false, alias: 'chat_id')
   late String chatId;
+
   Messages(this.from, this.to, this.content, this.timestamp, this.chatId);
+
   Messages.empty();
+
   Messages.fromJson(Map<String, dynamic> map) {
     id = map['id'];
     from = map['from'];

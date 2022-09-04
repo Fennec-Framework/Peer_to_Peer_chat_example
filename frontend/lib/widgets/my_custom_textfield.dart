@@ -64,9 +64,8 @@ class MyCustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
-        fillColor: Colors.grey.shade400,
         filled: true,
-        contentPadding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
+        contentPadding: const EdgeInsets.all(0.0),
         labelText: label,
         helperText: helper,
         labelStyle: const TextStyle(
@@ -75,7 +74,7 @@ class MyCustomTextField extends StatelessWidget {
           fontWeight: FontWeight.w400,
         ),
         hintStyle: const TextStyle(
-          color: Colors.grey,
+          color: Colors.black,
           fontSize: 14.0,
         ),
         enabledBorder: OutlineInputBorder(

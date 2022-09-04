@@ -1,3 +1,4 @@
+import 'package:backend/models/user.dart';
 import 'package:fennec_pg/fennec_pg.dart';
 
 import 'messages.dart';
@@ -14,13 +15,28 @@ class Chat extends Serializable {
       localKey: 'chat_id',
       foreignKey: 'chatId')
   List<Messages> messages = [];
+  @BelongsTo(
+      localKey: 'id', foreignKey: 'firstUser', fetchType: FetchType.include)
+  late User firstUser;
+  @BelongsTo(
+      localKey: 'id', foreignKey: 'secondUser', fetchType: FetchType.include)
+  late User secondUser;
+
   Chat(this.chatId);
+
   Chat.fromJson(Map<String, dynamic> map) {
+    print(map);
     chatId = map['chatId'];
     lastMessage = map['lastMessage'];
     if (map['messages'] != null) {
       messages = List<Messages>.from(
           map['messages'].map((e) => Messages.fromJson(e)).toList());
+    }
+    if (map['firstUser'] != null) {
+      firstUser = User.fromJson(map['firstUser']);
+    }
+    if (map['secondUser'] != null) {
+      secondUser = User.fromJson(map['secondUser']);
     }
   }
 }

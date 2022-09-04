@@ -29,6 +29,8 @@ Router authRouter() {
 
         FilterBuilder filterBuilder =
             Equals(Field.tableColumn('username'), Field.string(username));
+        filterBuilder
+            .or(Equals(Field.tableColumn('email'), Field.string(username)));
         final result =
             await userRepository.findAll(filterBuilder: filterBuilder);
         if (result.isEmpty) {
@@ -61,8 +63,10 @@ Router authRouter() {
         try {
           String username = req.body['username'];
           String password = req.body['password'];
+          String email = req.body['email'];
           User user = User();
           user.username = username;
+          user.email = email;
           user.isAnonym = false;
           Encrypted encrypted = Utils.encryptAES(key, password);
           user.password = encrypted.base64;
