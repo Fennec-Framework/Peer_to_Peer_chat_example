@@ -1,5 +1,7 @@
 import 'package:fennec_pg/fennec_pg.dart';
 
+import 'chat.dart';
+
 @Table('messages')
 class Messages extends Serializable {
   @PrimaryKey(autoIncrement: true)
@@ -12,9 +14,11 @@ class Messages extends Serializable {
   late String content;
   @Column(isNullable: false, type: ColumnType.bigInt)
   late int timestamp;
-  late String chatId;
+  @BelongsTo(
+      localKey: 'chatId', foreignKey: 'chat_id', fetchType: FetchType.exclude)
+  late Chat chat;
 
-  Messages(this.from, this.to, this.content, this.timestamp, this.chatId);
+  Messages(this.from, this.to, this.content, this.timestamp);
 
   Messages.empty();
 
@@ -24,6 +28,8 @@ class Messages extends Serializable {
     to = map['to'];
     content = map['content'];
     timestamp = map['timestamp'];
-    chatId = map['chat_id'];
+    if (map['chat'] != null) {
+      chat = Chat.fromJson(map['chat']);
+    }
   }
 }

@@ -16,16 +16,15 @@ class Chat extends Serializable {
       foreignKey: 'chatId')
   List<Messages> messages = [];
   @BelongsTo(
-      localKey: 'id', foreignKey: 'firstUser', fetchType: FetchType.include)
+      localKey: 'id', foreignKey: 'firstUserId', fetchType: FetchType.include)
   late User firstUser;
   @BelongsTo(
-      localKey: 'id', foreignKey: 'secondUser', fetchType: FetchType.include)
+      localKey: 'id', foreignKey: 'secondUserId', fetchType: FetchType.include)
   late User secondUser;
 
   Chat(this.chatId);
 
   Chat.fromJson(Map<String, dynamic> map) {
-    print(map);
     chatId = map['chatId'];
     lastMessage = map['lastMessage'];
     if (map['messages'] != null) {

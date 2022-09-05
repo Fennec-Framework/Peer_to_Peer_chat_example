@@ -15,10 +15,10 @@ class User extends Serializable {
   @Column(alias: 'is_anonym')
   bool isAnonym = false;
   @HasMany(
-      localKey: 'firstUser', foreignKey: 'id', fetchType: FetchType.exclude)
+      localKey: 'firstUserId', foreignKey: 'id', fetchType: FetchType.exclude)
   List<Chat> firstUser = [];
   @HasMany(
-      localKey: 'secondUser', foreignKey: 'id', fetchType: FetchType.exclude)
+      localKey: 'secondUserId', foreignKey: 'id', fetchType: FetchType.exclude)
   List<Chat> secondUser = [];
 
   User();

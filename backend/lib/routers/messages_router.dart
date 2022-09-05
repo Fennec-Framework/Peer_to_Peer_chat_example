@@ -11,7 +11,7 @@ Router messagesRouter() {
   Router router = Router(routerPath: '/api/v1/messages');
   final MessagesRepository messagesRepository = MessagesRepository();
   final ChatRepository chatRepository = ChatRepository();
-  router.useMiddleware(verfiyToken);
+  //router.useMiddleware(verfiyToken);
 
   router.post(
       path: '/createmessage',
@@ -20,19 +20,19 @@ Router messagesRouter() {
         var chat = await chatRepository.findOneById(chatId);
         if (chat == null) {
           res.badRequest().json({'message': 'Chat with $chatId not found'});
-        }
-        {
-          Messages messages = Messages(
-              req.body['from'],
-              req.body['to'],
-              req.body['content'],
-              DateTime.now().millisecondsSinceEpoch,
-              chatId);
+        } else {
+          Messages messages = Messages(req.body['from'], req.body['to'],
+              req.body['content'], DateTime.now().millisecondsSinceEpoch);
+          messages.chat = chat;
+
           final result = await messagesRepository.insert(messages);
 
           if (result != null) {
-            chat!.lastMessage = result.toJson();
-
+            Map<String, dynamic> chatMap = result.toJson();
+            if (chatMap.containsKey('chat')) {
+              chatMap.remove('chat');
+            }
+            chat.lastMessage = chatMap;
             chat = await chatRepository.updateOneById(chatId, chat);
             if (chat != null) {
               SocketIOSingelton.instance.serverIO.emit(
@@ -85,14 +85,14 @@ Router messagesRouter() {
       path: '/getMessages/@chatId',
       requestHandler: (req, res) async {
         String chatId = req.pathParams['chatId'];
+        int limit = int.parse(req.params['limit'] ?? 20);
+        int offset = int.parse(req.params['offset'] ?? 0);
 
-        SelectBuilder selectBuilder = SelectBuilder(['*']);
-        selectBuilder.setLimit(10);
-
-        selectBuilder.condition =
+        FilterBuilder filterBuilder =
             Equals(Field.tableColumn('chat_id'), Field.string(chatId));
 
-        final result = await messagesRepository.selectAll(selectBuilder);
+        final result = await messagesRepository.findAll(
+            filterBuilder: filterBuilder, limit: limit, offset: offset);
 
         res.json({'res': result});
       });

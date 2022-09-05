@@ -13,7 +13,10 @@ void main(List<String> arguments) async {
   await PGConnectionAdapter.initPool(uri);
   Application application = Application();
   application.useSocketIOServer(false);
-  application.addRouter(authRouter()).addRouter(chatRouter());
+  application
+      .addRouter(authRouter())
+      .addRouter(chatRouter())
+      .addRouter(messagesRouter());
   ServerIO serverIO = ServerIO();
   application.setPort(8000).setHost(InternetAddress.loopbackIPv4);
   Server server = Server(application);

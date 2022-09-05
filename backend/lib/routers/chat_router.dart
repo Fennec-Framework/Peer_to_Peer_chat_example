@@ -26,10 +26,37 @@ Router chatRouter() {
           res.json({'result': result});
         }
       });
+  router.delete(
+      path: '/deletechat/@chatId',
+      middlewares: [],
+      requestHandler: (req, res) async {
+        String chatId = req.pathParams['chatId'];
+        final result = await chatRepository.deleteOneById(chatId);
+        if (result == null) {
+          res.badRequest().json({'message': 'Chat with $chatId not found'});
+        } else {
+          SocketIOSingelton.instance.serverIO.emit(
+              'realtime/chats', {'event': 'delete', 'data': result.toJson()});
+          res.json({'result': result});
+        }
+      });
   router.get(
       path: '/chats',
       requestHandler: (req, res) async {
-        final result = await chatRepository.findOneById('1_2');
+        final result = await chatRepository.findAll();
+
+        res.json({'result': result});
+      });
+  router.get(
+      path: '/mychats/@userid',
+      requestHandler: (req, res) async {
+        int userid = int.parse(req.pathParams['userid']);
+        FilterBuilder filterBuilder =
+            Equals(Field.tableColumn('"firstUserId"'), Field.int(userid));
+        filterBuilder
+            .or(Equals(Field.tableColumn('"secondUserId"'), Field.int(userid)));
+        final result =
+            await chatRepository.findAll(filterBuilder: filterBuilder);
 
         res.json({'result': result});
       });
@@ -69,17 +96,10 @@ Router chatRouter() {
           }
           chat.firstUser = firstUser;
           chat.secondUser = secondUser;
-          chatId = "'$chatId'";
-          var lastMessageIntoSql =
-              "'${lastMessage.map((key, value) => MapEntry('"$key"', value))}'";
-          print(lastMessageIntoSql);
-          final sqlQuery =
-              'insert into chats ("chatId","lastMessage","firstUser","secondUser") values ($chatId,$lastMessageIntoSql,$firstUserId,$secondUserId) returning *';
 
-          final result =
-              await PGConnectionAdapter.connection.query(sqlQuery).toList();
+          final result = await chatRepository.insert(chat);
 
-          if (result.isNotEmpty) {
+          if (result != null) {
             SocketIOSingelton.instance.serverIO.emit(
                 'realtime/chats', {'event': 'create', 'data': chat.toJson()});
             res.ok().send('chat successful created');

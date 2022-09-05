@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:fennec/fennec.dart' hide UserRepository;
+import 'package:fennec/fennec.dart' hide UserRepository, Utils;
 import 'package:fennec_jwt/fennec_jwt.dart';
 import 'package:fennec_pg/fennec_pg.dart';
 import 'package:encrypt/encrypt.dart';
