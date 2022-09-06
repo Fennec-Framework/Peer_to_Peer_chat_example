@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:fennec/fennec.dart' hide UserRepository, Utils;
@@ -34,13 +35,19 @@ Router authRouter() {
         final result =
             await userRepository.findAll(filterBuilder: filterBuilder);
         if (result.isEmpty) {
-          res.badRequest().json({'message': 'User not Found'});
+          return res.badRequest(
+              body: {'message': 'User not Found'},
+              contentType: ContentType.json);
         } else if (result.length > 1) {
-          res.badRequest().json({'message': 'Many Users found'});
+          return res.badRequest(
+              body: {'message': 'Many Users found'},
+              contentType: ContentType.json);
         } else {
           String hash = Utils.decryptAES(key, result.first.password!);
           if (hash != password) {
-            res.badRequest().json({'message': 'User not Found'});
+            return res.badRequest(
+                body: {'message': 'User not Found'},
+                contentType: ContentType.json);
           } else {
             final claimSet = JwtClaim(
               issuer: 'fennec_jwt',
@@ -53,7 +60,9 @@ Router authRouter() {
               maxAge: const Duration(days: 1),
             );
             final token = generateJwtHS256(claimSet, sharedSecret);
-            res.ok().json({'user': result.first.toJson(), 'token': token});
+            return res.ok(
+                body: {'user': result.first.toJson(), 'token': token},
+                contentType: ContentType.json);
           }
         }
       });
@@ -70,10 +79,11 @@ Router authRouter() {
           user.isAnonym = false;
           Encrypted encrypted = Utils.encryptAES(key, password);
           user.password = encrypted.base64;
-
           final result = await userRepository.insert(user);
           if (result == null) {
-            res.badRequest().json({'message': 'error by creating new User'});
+            return res.badRequest(
+                body: {'message': 'error by creating new User'},
+                contentType: ContentType.json);
           } else {
             final claimSet = JwtClaim(
               issuer: 'fennec_jwt',
@@ -86,10 +96,13 @@ Router authRouter() {
               maxAge: const Duration(minutes: 5),
             );
             final token = generateJwtHS256(claimSet, sharedSecret);
-            res.ok().json({'user': result.toJson(), 'token': token});
+            return res.ok(
+                body: {'user': result.toJson(), 'token': token},
+                contentType: ContentType.json);
           }
         } catch (e) {
-          res.internalServerError().json({'message': e.toString()});
+          return res.internalServerError(
+              body: {'message': e.toString()}, contentType: ContentType.json);
         }
       });
 

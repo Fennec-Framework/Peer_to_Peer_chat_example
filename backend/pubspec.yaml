@@ -15,7 +15,7 @@ dev_dependencies:
 dependencies:
   {
     encrypt: ^5.0.1,
-    fennec: ^1.0.4,
+    fennec: ^2.0.2,
     fennec_jwt: ^0.0.2,
     fennec_pg: ^1.0.3,
     fennec_socket_io_server: ^0.0.3,

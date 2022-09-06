@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:backend/models/messages.dart';
 import 'package:backend/repositories/user_repository.dart';
 import 'package:backend/socket_io_singelton.dart';
@@ -19,7 +21,9 @@ Router messagesRouter() {
         String chatId = req.body['chatId'];
         var chat = await chatRepository.findOneById(chatId);
         if (chat == null) {
-          res.badRequest().json({'message': 'Chat with $chatId not found'});
+          return res.badRequest(
+              body: {'message': 'Chat with $chatId not found'},
+              contentType: ContentType.json);
         } else {
           Messages messages = Messages(req.body['from'], req.body['to'],
               req.body['content'], DateTime.now().millisecondsSinceEpoch);
@@ -40,12 +44,14 @@ Router messagesRouter() {
                   {'event': 'create', 'data': result.toJson()});
               SocketIOSingelton.instance.serverIO.emit(
                   'realtime/chats', {'event': 'update', 'data': chat.toJson()});
-              res.json({'res': result.toJson()});
+              return res.ok(
+                  body: {'res': result.toJson()},
+                  contentType: ContentType.json);
             } else {
-              res.badRequest().send('error');
+              return res.badRequest(body: 'error');
             }
           } else {
-            res.badRequest().send('error');
+            return res.badRequest(body: 'error');
           }
         }
       });
@@ -57,14 +63,15 @@ Router messagesRouter() {
         String chatId = req.body['chatId'];
         var chat = await chatRepository.findOneById(chatId);
         if (chat == null) {
-          res.badRequest().json({'message': 'Chat with $chatId not found'});
+          return res.badRequest(
+              body: {'message': 'Chat with $chatId not found'},
+              contentType: ContentType.json);
         } else {
           int messageId = int.parse(req.pathParams['messageId']);
 
           Messages? messages = await messagesRepository.findOneById(messageId);
           if (messages == null) {
-            res.badRequest().send('error');
-            return;
+            return res.badRequest(body: 'error');
           }
           messages.content = req.body['content'];
 
@@ -75,9 +82,10 @@ Router messagesRouter() {
             SocketIOSingelton.instance.serverIO.emit(
                 'realtime/chat/${chat.chatId}/messages',
                 {'event': 'update', 'data': result.toJson()});
-            res.json({'res': result.toJson()});
+            return res.ok(
+                body: {'res': result.toJson()}, contentType: ContentType.json);
           } else {
-            res.badRequest().send('error');
+            return res.badRequest(body: 'error');
           }
         }
       });
@@ -94,7 +102,7 @@ Router messagesRouter() {
         final result = await messagesRepository.findAll(
             filterBuilder: filterBuilder, limit: limit, offset: offset);
 
-        res.json({'res': result});
+        return res.ok(body: {'res': result}, contentType: ContentType.json);
       });
   return router;
 }

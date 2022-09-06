@@ -12,7 +12,7 @@ void main(List<String> arguments) async {
   var uri = 'postgres://postgres:StartAppPassword@localhost:5432/test_flutter';
   await PGConnectionAdapter.initPool(uri);
   Application application = Application();
-  application.useSocketIOServer(false);
+  application.useSocketIOServer(true);
   application
       .addRouter(authRouter())
       .addRouter(chatRouter())
