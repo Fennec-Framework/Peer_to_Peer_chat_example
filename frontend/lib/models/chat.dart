@@ -11,7 +11,6 @@ class Chat {
   Chat(this.chatId);
 
   Chat.fromJson(Map<String, dynamic> map) {
-    print(map);
     chatId = map['chatId'];
     lastMessage = Message.fromJson(map['lastMessage']);
     firstUser = User.fromJson(map['firstUser']);

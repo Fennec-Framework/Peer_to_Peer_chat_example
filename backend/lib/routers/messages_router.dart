@@ -19,6 +19,7 @@ Router messagesRouter() {
       path: '/createmessage',
       requestHandler: (req, res) async {
         String chatId = req.body['chatId'];
+      
         var chat = await chatRepository.findOneById(chatId);
         if (chat == null) {
           return res.badRequest(

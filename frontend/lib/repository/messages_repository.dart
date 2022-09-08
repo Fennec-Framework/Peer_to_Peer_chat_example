@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:frontend/models/message.dart';
 
@@ -8,7 +10,7 @@ class MessagesRepository {
 
   Future<List<Message>> loadMessages(String chatId) async {
     List<Message> messages = [];
-    print(chatId);
+
     try {
       final result =
           await _dio.get("$basePath/api/v1/messages/getMessages/$chatId",
@@ -24,8 +26,31 @@ class MessagesRepository {
 
       return messages;
     } catch (e) {
-      print(e);
       return messages;
+    }
+  }
+
+  Future<Map<String, dynamic>?> sendMessage(
+      String chatId, int from, int to, String content) async {
+    final map = {
+      "chatId": chatId,
+      "from": from,
+      "to": to,
+      "content": content,
+    };
+
+    try {
+      final result = await _dio.post("$basePath/api/v1/messages/createmessage",
+          data: jsonEncode(map),
+          options: Options(headers: {
+            "Accept": "application/json",
+            "content-type": "application/json",
+          }));
+
+      return result.data['res'];
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 }

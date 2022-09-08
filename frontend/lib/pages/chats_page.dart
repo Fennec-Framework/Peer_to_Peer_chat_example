@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/pages/messages_page.dart';
 import 'package:frontend/repository/chat_repository.dart';
 
+import '../clients/socket_io_client.dart';
 import '../models/chat.dart';
 import '../models/user.dart';
 import '../utils/utils.dart';
@@ -25,6 +26,7 @@ class _ChatsPageState extends State<ChatsPage> {
   @override
   void initState() {
     _loadChats();
+    listenToRealTime();
     super.initState();
   }
 
@@ -32,9 +34,27 @@ class _ChatsPageState extends State<ChatsPage> {
     setState(() {
       loading = true;
     });
-    chats = await chatRepository.loadChats(1);
+    chats = await chatRepository.loadChats(widget.currentUser.id);
     setState(() {
       loading = false;
+    });
+  }
+
+  SocketIoClient socketIoClient = SocketIoClient();
+
+  void listenToRealTime() {
+    socketIoClient.socket.off("realtime/chats");
+    socketIoClient.socket.on("realtime/chats", (data) {
+      if (data['event'] == 'update') {
+        Chat chat = Chat.fromJson(data['data']);
+        int index =
+            chats.indexWhere((element) => element.chatId == chat.chatId);
+        setState(() {
+          if (index != -1) {
+            chats[index] = chat;
+          }
+        });
+      }
     });
   }
 
@@ -61,8 +81,10 @@ class _ChatsPageState extends State<ChatsPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            MessagesPage(chat: chats[index])));
+                        builder: (context) => MessagesPage(
+                              chat: chats[index],
+                              currentUser: widget.currentUser,
+                            )));
               },
               child: Container(
                 color: Colors.white,
