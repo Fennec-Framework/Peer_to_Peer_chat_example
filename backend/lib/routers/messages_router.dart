@@ -26,9 +26,7 @@ Router messagesRouter() {
               contentType: ContentType.json);
         } else {
           Messages messages = Messages(req.body['from'], req.body['to'],
-              req.body['content'], DateTime
-                  .now()
-                  .millisecondsSinceEpoch);
+              req.body['content'], DateTime.now().millisecondsSinceEpoch);
           messages.chat = chat;
 
           final result = await messagesRepository.insert(messages);
@@ -78,7 +76,7 @@ Router messagesRouter() {
           messages.content = req.body['content'];
 
           final result =
-          await messagesRepository.updateOneById(messageId, messages);
+              await messagesRepository.updateOneById(messageId, messages);
 
           if (result != null) {
             SocketIOSingelton.instance.serverIO.emit(
@@ -97,15 +95,14 @@ Router messagesRouter() {
         print(req.pathParams['chatId']);
         String chatId = req.pathParams['chatId'] as String;
         print('aaa');
-       
 
         FilterBuilder filterBuilder =
-        Equals(Field.tableColumn('chat_id'), Field.string(chatId));
+            Equals(Field.tableColumn('chat_id'), Field.string(chatId));
 
-        final result = await messagesRepository.findAll(
-            filterBuilder: filterBuilder);
-        print(result);
-        return res.ok(body: {'res': result}, contentType: ContentType.json);
+        final result =
+            await messagesRepository.findAll(filterBuilder: filterBuilder);
+
+        return res.ok(body: {'result': result}, contentType: ContentType.json);
       });
   return router;
 }

@@ -16,7 +16,7 @@ class Messages extends Serializable {
   late int timestamp;
   @BelongsTo(
       localKey: 'chatId', foreignKey: 'chat_id', fetchType: FetchType.exclude)
-  late Chat chat;
+  Chat? chat;
 
   Messages(this.from, this.to, this.content, this.timestamp);
 
