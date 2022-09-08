@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Utils {
+
+
   static void showSnackBar(BuildContext context, String body,
       {Color? color, Icon? icon}) {
     ScaffoldMessenger.of(context).showSnackBar(

@@ -57,11 +57,11 @@ Router chatRouter() {
       requestHandler: (req, res) async {
         int userid = int.parse(req.pathParams['userid']);
         FilterBuilder filterBuilder =
-            Equals(Field.tableColumn('"firstUserId"'), Field.int(userid));
+        Equals(Field.tableColumn('"firstUserId"'), Field.int(userid));
         filterBuilder
             .or(Equals(Field.tableColumn('"secondUserId"'), Field.int(userid)));
-        final result =
-            await chatRepository.findAll(filterBuilder: filterBuilder);
+        var result =
+        await chatRepository.findAll(filterBuilder: filterBuilder);
 
         return res.ok(body: {'result': result}, contentType: ContentType.json);
       });
@@ -89,7 +89,7 @@ Router chatRouter() {
             return res.badRequest(body: 'User with id $firstUserId not Found');
           }
           final User? secondUser =
-              await userRepository.findOneById(secondUserId);
+          await userRepository.findOneById(secondUserId);
           if (secondUser == null) {
             return res.badRequest(body: 'User with id $secondUserId not Found');
           }
