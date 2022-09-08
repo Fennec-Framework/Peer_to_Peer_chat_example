@@ -44,9 +44,7 @@ Router messagesRouter() {
                   {'event': 'create', 'data': result.toJson()});
               SocketIOSingelton.instance.serverIO.emit(
                   'realtime/chats', {'event': 'update', 'data': chat.toJson()});
-              return res.ok(
-                  body: {'res': result.toJson()},
-                  contentType: ContentType.json);
+              return res.ok(body: {'res': result.toJson()}).json();
             } else {
               return res.badRequest(body: 'error');
             }
@@ -82,8 +80,7 @@ Router messagesRouter() {
             SocketIOSingelton.instance.serverIO.emit(
                 'realtime/chat/${chat.chatId}/messages',
                 {'event': 'update', 'data': result.toJson()});
-            return res.ok(
-                body: {'res': result.toJson()}, contentType: ContentType.json);
+            return res.ok(body: {'result': result.toJson()}).json();
           } else {
             return res.badRequest(body: 'error');
           }
@@ -102,7 +99,7 @@ Router messagesRouter() {
         final result =
             await messagesRepository.findAll(filterBuilder: filterBuilder);
 
-        return res.ok(body: {'result': result}, contentType: ContentType.json);
+        return res.ok(body: {'result': result}).json();
       });
   return router;
 }
