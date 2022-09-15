@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/pages/add_user_page.dart';
 import 'package:frontend/pages/messages_page.dart';
 import 'package:frontend/repository/chat_repository.dart';
 
@@ -54,6 +55,14 @@ class _ChatsPageState extends State<ChatsPage> {
             chats[index] = chat;
           }
         });
+      } else if (data['event'] == 'create') {
+        Chat chat = Chat.fromJson(data['data']);
+        if (chat.firstUser.id == widget.currentUser.id ||
+            chat.secondUser.id == widget.currentUser.id) {
+          setState(() {
+            chats.insert(0, chat);
+          });
+        }
       }
     });
   }
@@ -69,50 +78,68 @@ class _ChatsPageState extends State<ChatsPage> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: ListView.builder(
-          itemCount: chats.length,
-          itemBuilder: (_, index) {
-            User receiverUser =
-                chats[index].firstUser.id == widget.currentUser.id
-                    ? chats[index].secondUser
-                    : chats[index].firstUser;
-            return InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MessagesPage(
-                              chat: chats[index],
-                              currentUser: widget.currentUser,
-                            )));
-              },
-              child: Container(
-                color: Colors.white,
-                child: ListTile(
-                  leading: CircleAvatar(
-                      backgroundColor:
-                          Utils.getColorByString(receiverUser.username),
-                      child: Text(
-                        receiverUser.username.length >= 2
-                            ? receiverUser.username
-                                .substring(0, 2)
-                                .toUpperCase()
-                            : "SA",
-                      )),
-                  title: Text(
-                    receiverUser.username,
+      body: RefreshIndicator(
+        onRefresh: _loadChats,
+        child: ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (_, index) {
+              User receiverUser =
+                  chats[index].firstUser.id == widget.currentUser.id
+                      ? chats[index].secondUser
+                      : chats[index].firstUser;
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MessagesPage(
+                                newChat: false,
+                                chat: chats[index],
+                                currentUser: widget.currentUser,
+                              )));
+                },
+                child: Container(
+                  color: Colors.white,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                        backgroundColor:
+                            Utils.getColorByString(receiverUser.username),
+                        child: Text(
+                          receiverUser.username.length >= 2
+                              ? receiverUser.username
+                                  .substring(0, 2)
+                                  .toUpperCase()
+                              : "SA",
+                        )),
+                    title: Text(
+                      receiverUser.username,
+                    ),
+                    subtitle: (chats[index].lastMessage != null)
+                        ? Text(
+                            chats[index].lastMessage!.content,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
                   ),
-                  subtitle: (chats[index].lastMessage != null)
-                      ? Text(
-                          chats[index].lastMessage!.content,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      : null,
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+      ),
+      floatingActionButton: FloatingActionButton(
+          elevation: 0.0,
+          backgroundColor: const Color(0xff03dac6),
+          foregroundColor: Colors.black,
+          heroTag: 'uniqueTag',
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddUserPage(currentUser: widget.currentUser),
+                ));
+          },
+          child: const Icon(Icons.person_add_alt_sharp)),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:backend/routers/auth_router.dart';
 import 'package:backend/routers/chat_router.dart';
 import 'package:backend/routers/messages_router.dart';
+import 'package:backend/routers/user_router.dart';
 import 'package:backend/socket_io_singelton.dart';
 import 'package:fennec/fennec.dart';
 import 'package:fennec_pg/pg_connection_adapter.dart';
@@ -16,7 +17,8 @@ void main(List<String> arguments) async {
   application
       .addRouter(authRouter())
       .addRouter(chatRouter())
-      .addRouter(messagesRouter());
+      .addRouter(messagesRouter())
+      .addRouter(userRouter());
   ServerIO serverIO = ServerIO();
   application.setPort(8000).setHost(InternetAddress.loopbackIPv4);
   Server server = Server(application);

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/models/message.dart';
+import 'package:frontend/repository/chat_repository.dart';
 import 'package:frontend/repository/messages_repository.dart';
 
 import '../clients/socket_io_client.dart';
@@ -12,8 +13,13 @@ import 'dart:ui' as ui;
 class MessagesPage extends StatefulWidget {
   final Chat chat;
   final User currentUser;
+  final bool newChat;
 
-  const MessagesPage({Key? key, required this.chat, required this.currentUser})
+  const MessagesPage(
+      {Key? key,
+      required this.chat,
+      required this.currentUser,
+      required this.newChat})
       : super(key: key);
 
   @override
@@ -31,6 +37,7 @@ class _MessagesPageState extends State<MessagesPage> {
 
   @override
   void initState() {
+    print(widget.chat.chatId);
     _loadMessages();
     listenToRealTime();
 
@@ -84,6 +91,7 @@ class _MessagesPageState extends State<MessagesPage> {
       bottomSheet: Container(
         padding: const EdgeInsets.only(bottom: 20),
         child: TextInputField(
+          newChat: widget.newChat,
           currentUser: widget.currentUser,
           chatId: widget.chat.chatId,
           receiverUser: widget.currentUser.id == widget.chat.firstUser.id
@@ -230,6 +238,7 @@ class InBubble extends StatelessWidget {
 }
 
 class TextInputField extends StatefulWidget {
+  final bool newChat;
   final String chatId;
   final User currentUser;
   final User receiverUser;
@@ -238,7 +247,8 @@ class TextInputField extends StatefulWidget {
       {Key? key,
       required this.chatId,
       required this.currentUser,
-      required this.receiverUser})
+      required this.receiverUser,
+      required this.newChat})
       : super(key: key);
 
   @override
@@ -266,6 +276,8 @@ class _TextInputField extends State<TextInputField> {
   }
 
   final MessagesRepository messagesRepository = MessagesRepository();
+  final ChatRepository chatRepository = ChatRepository();
+  bool chatCreated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -290,11 +302,16 @@ class _TextInputField extends State<TextInputField> {
             onPressed: _controller.text.isEmpty
                 ? null
                 : () async {
+                    if (widget.newChat && !chatCreated) {
+                      final x = await chatRepository.createChat(widget.chatId,
+                          widget.currentUser.id, widget.receiverUser.id);
+                    }
                     final result = await messagesRepository.sendMessage(
                         widget.chatId,
                         widget.currentUser.id,
                         widget.receiverUser.id,
                         _controller.text);
+                    _controller.clear();
                   },
             icon: const Icon(
               Icons.send_rounded,

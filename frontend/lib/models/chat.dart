@@ -4,7 +4,7 @@ import 'package:frontend/models/user.dart';
 
 class Chat {
   late String chatId;
-  late Message? lastMessage;
+  Message? lastMessage;
   late User firstUser;
   late User secondUser;
 
@@ -12,7 +12,9 @@ class Chat {
 
   Chat.fromJson(Map<String, dynamic> map) {
     chatId = map['chatId'];
-    lastMessage = Message.fromJson(map['lastMessage']);
+    if (map['lastMessage'] != null && Map.from(map['lastMessage']).isNotEmpty) {
+      lastMessage = Message.fromJson(map['lastMessage']);
+    }
     firstUser = User.fromJson(map['firstUser']);
     secondUser = User.fromJson(map['secondUser']);
   }

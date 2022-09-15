@@ -14,15 +14,22 @@ class SocketIoClient {
     _socket = io(
         basePath,
         OptionBuilder()
-            .setTransports(['websocket']) // for Flutter or Dart VM
-            .enableForceNewConnection() // necessary because otherwise it would reuse old connection
-            .setExtraHeaders(<String, dynamic>{})
-            .setQuery({})
+            .setTransports(['websocket'])
+            .setQuery({"auth": 1}) // for Flutter or Dart VM
+            .disableAutoConnect()
             .build());
-    _socket.connect();
+    if (!_socket.connected) {
+      _socket.connect();
+    }
 
     _socket.onError((data) {
       print(data);
+    });
+    _socket.onDisconnect((data) {
+      print('disconecct');
+    });
+    _socket.onConnect((data) {
+      print('connect');
     });
   }
 }

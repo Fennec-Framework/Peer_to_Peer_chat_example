@@ -6,6 +6,7 @@ import 'package:frontend/repository/auth_repository.dart';
 import 'package:frontend/widgets/my_custom_textfield.dart';
 
 import '../utils/utils.dart';
+import 'chats_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -188,6 +189,12 @@ class _SignUpPageState extends State<SignUpPage> {
                       Icons.check_circle,
                       color: Colors.green,
                     ));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChatsPage(
+                              currentUser: result,
+                            )));
               }
             },
             height: 45,

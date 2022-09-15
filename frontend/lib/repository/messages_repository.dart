@@ -49,7 +49,6 @@ class MessagesRepository {
 
       return result.data['res'];
     } catch (e) {
-      print(e);
       return null;
     }
   }

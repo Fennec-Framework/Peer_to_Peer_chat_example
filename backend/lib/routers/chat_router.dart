@@ -57,11 +57,10 @@ Router chatRouter() {
       requestHandler: (req, res) async {
         int userid = int.parse(req.pathParams['userid']);
         FilterBuilder filterBuilder =
-        Equals(Field.tableColumn('"firstUserId"'), Field.int(userid));
+            Equals(Field.tableColumn('"firstUserId"'), Field.int(userid));
         filterBuilder
             .or(Equals(Field.tableColumn('"secondUserId"'), Field.int(userid)));
-        var result =
-        await chatRepository.findAll(filterBuilder: filterBuilder);
+        var result = await chatRepository.findAll(filterBuilder: filterBuilder);
 
         return res.ok(body: {'result': result}, contentType: ContentType.json);
       });
@@ -69,9 +68,9 @@ Router chatRouter() {
   router.post(
       path: '/createchat',
       requestHandler: (req, res) async {
-        String chatId = req.body['chatId'];
-        int firstUserId = int.parse(req.body['firstUserId']);
-        int secondUserId = int.parse(req.body['secondUserId']);
+        String chatId = req.body['chatId'].toString();
+        int firstUserId = req.body['firstUserId'];
+        int secondUserId = req.body['secondUserId'];
 
         Map<String, dynamic> lastMessage = req.body['lastMessage'] ?? {};
         Chat chat = Chat(chatId);
@@ -80,7 +79,7 @@ Router chatRouter() {
         final result = await chatRepository.findOneById(chatId);
         if (result != null) {
           SocketIOSingelton.instance.serverIO.emit(
-              'realtime/chats', {'event': 'create', 'data': result.toJson()});
+              'realtime/chats', {'event': 'update', 'data': result.toJson()});
 
           return res.ok(body: 'chat already exist');
         } else {
@@ -89,7 +88,7 @@ Router chatRouter() {
             return res.badRequest(body: 'User with id $firstUserId not Found');
           }
           final User? secondUser =
-          await userRepository.findOneById(secondUserId);
+              await userRepository.findOneById(secondUserId);
           if (secondUser == null) {
             return res.badRequest(body: 'User with id $secondUserId not Found');
           }
